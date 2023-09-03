@@ -13,7 +13,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 offset-md-3">
-                    <div class="card mt-3">
+                    <div class="card mt-5">
                         <div class="card-header custom-bg text-white">
                             <h3>Login here</h3>
                         </div>
@@ -31,8 +31,8 @@
                                 </div>
                                 <a href="register.jsp" class="text-center d-block mb-2"> if not register click here </a>
                                 <div class="container text-center">
-                                    <button type="submit" class="btn btn-primary custom-bg border-0">Submit</button>
-                                    <button type="reset" class="btn btn-primary custom-bg border-0">Reset</button>
+                                    <button type="submit" class="btn btn-primary custom-bg border-0">Login</button>
+                                    <!--<button type="reset" class="btn btn-primary custom-bg border-0">Reset</button>-->
                                 </div>
                             </form>
                         </div>

@@ -12,7 +12,7 @@
             <div class="row mt-2">
                 <div class="col-md-4 offset-md-4">
                     
-                    <div class="card">
+                    <div class="card mt-3">
                         <%@include file="components/message.jsp" %>
                         <div class="card-body px-5">
                             <h2 class="text-center">Sign Up Here!!</h2>
