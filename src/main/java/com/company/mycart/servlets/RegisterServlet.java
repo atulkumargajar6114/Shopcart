@@ -18,49 +18,67 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-
 public class RegisterServlet extends HttpServlet {
 
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+        try (PrintWriter out = response.getWriter()) {
             try {
-                String userName=request.getParameter("user_name");
-                String userEmail=request.getParameter("user_email");
-                String userPassword=request.getParameter("user_password");
-                String userPhone=request.getParameter("user_phone");
-                String userAddress=request.getParameter("user_address");
-//                creating user object to store data
-                Session hibernateSession=FactoryProvider.getFactory().openSession();
-                Query query=hibernateSession.createQuery("FROM User WHERE userEmail=:user_email");
-                query.setParameter("user_email", userEmail);
-                List<User> userList=query.list();
-                hibernateSession.close();
-                if(!userList.isEmpty()){
-                    HttpSession session=request.getSession();
-                    session.setAttribute("message", "Email already Exists");
-                    response.sendRedirect("register.jsp");
-                    return;
-                
+                String userName = request.getParameter("user_name");
+                String userEmail = request.getParameter("user_email");
+                String userPassword = request.getParameter("user_password");
+                String userPhone = request.getParameter("user_phone");
+                String userAddress = request.getParameter("user_address");
+
+                // creating user object to store data
+                Session hibernateSession = FactoryProvider.getFactory().openSession();
+                Transaction tx = null;
+
+                try {
+                    Query query = hibernateSession.createQuery("FROM User WHERE userEmail=:user_email");
+                    query.setParameter("user_email", userEmail);
+                    List<User> userList = query.list();
+
+                    if (!userList.isEmpty()) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("message", "Email already Exists");
+                        response.sendRedirect("register.jsp");
+                        return;
+                    }
+
+                    // Start a new transaction
+                    tx = hibernateSession.beginTransaction();
+
+                    User user = new User(userName, userEmail, userPassword, userPhone, "default.jpg", userAddress, "normal");
+                    int userId = (int) hibernateSession.save(user);
+
+                    // Commit the transaction
+                    tx.commit();
+                } catch (Exception e) {
+                    if (tx != null) {
+                        tx.rollback(); // Rollback the transaction if an exception occurs
+                    }
+                    e.printStackTrace();
+                } finally {
+                    hibernateSession.close(); // Close the session in the finally block
                 }
-                User user=new User(userName, userEmail, userPassword, userPhone, "default.jpg", userAddress,"normal");
-                Transaction tx=hibernateSession.beginTransaction();
-                int userId= (int)hibernateSession.save(user);
-                tx.commit();
-                hibernateSession.close();
-                HttpSession httpSession=request.getSession();
+
+                HttpSession httpSession = request.getSession();
                 httpSession.setAttribute("message", "Registration Successful !!");
                 response.sendRedirect("register.jsp");
                 return;
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
+    // Other methods...
+
+
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
